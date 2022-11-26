@@ -39,6 +39,7 @@ async function run() {
     try {
         const categoriesCollection = client.db("pcParts").collection('category');
         const usersCollection = client.db("pcParts").collection('user');
+        const productsCollection = client.db("pcParts").collection('product');
 
         app.get('/categories', async (req, res) => {
             const query = {};
@@ -92,6 +93,12 @@ async function run() {
             // If this email already available in the data base then show this status
             res.status(403).send({ message: 'User already Exist in database' })
 
+        })
+
+        app.post('/products', async (req, res) => {
+            const product = req.body;
+            const addProduct = await productsCollection.insertOne(product);
+            res.send(addProduct);
         })
     }
     finally { }
