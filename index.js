@@ -48,11 +48,6 @@ async function run() {
 
 
 
-        // app.get('/users', async (req, res) => {
-        //     const query = {};
-        //     const allUser = await usersCollection.find(query).toArray();
-        //     res.send(allUser);
-        // })
 
         app.get('/jwt', async (req, res) => {
             const email = req.query.email;
@@ -64,6 +59,21 @@ async function run() {
             }
             console.log(user);
             res.status(403).send({ accessToken: '' })
+        })
+
+        app.get('/users', async (req, res) => {
+            // Find email wise user only
+            const email = req.query.email;
+            if (email) {
+                const query = { email: email };
+                const singleUser = await usersCollection.findOne(query);
+                return res.send(singleUser);
+            }
+            // Find all user
+            const allUserQuery = {};
+            const allUser = await usersCollection.find(allUserQuery).toArray();
+            res.send(allUser);
+
         })
 
         app.post('/users', async (req, res) => {
