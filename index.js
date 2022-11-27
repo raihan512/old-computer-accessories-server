@@ -106,6 +106,19 @@ async function run() {
             const categoryProducts = await productsCollection.find(query).toArray();
             res.send(categoryProducts);
         })
+        app.get('/products', async (req, res) => {
+            // find products by user email
+            const email = req.query.email;
+            if (email) {
+                const query = { sellerEmail: email };
+                const userProduct = await productsCollection.find(query).toArray();
+                return res.send(userProduct);
+            }
+            // find all products
+            const allQuery = {};
+            const allProducts = await productsCollection.find(allQuery).sort({ _id: -1 }).toArray();
+            res.send(allProducts);
+        })
     }
     finally { }
 }
