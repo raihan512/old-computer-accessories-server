@@ -100,6 +100,12 @@ async function run() {
             const addProduct = await productsCollection.insertOne(product);
             res.send(addProduct);
         })
+        app.get('/products/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { productCategory: id };
+            const categoryProducts = await productsCollection.find(query).toArray();
+            res.send(categoryProducts);
+        })
     }
     finally { }
 }
