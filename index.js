@@ -142,6 +142,13 @@ async function run() {
             const updateProduct = await productsCollection.updateOne(query, addValue, options);
             res.send(updateProduct);
         })
+
+        app.get('/productdetails/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const findProduct = await productsCollection.findOne(query);
+            res.send(findProduct)
+        })
     }
     finally { }
 }
