@@ -58,7 +58,6 @@ async function run() {
                 const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: '1h' });
                 return res.send({ accessToken: token });
             }
-            console.log(user);
             res.status(403).send({ accessToken: '' })
         })
 
@@ -75,6 +74,14 @@ async function run() {
             const allUser = await usersCollection.find(allUserQuery).toArray();
             res.send(allUser);
 
+        })
+
+        // Delete user by id
+        app.delete('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const deluser = await usersCollection.deleteOne(query);
+            res.send(deluser)
         })
 
         app.post('/users', async (req, res) => {
