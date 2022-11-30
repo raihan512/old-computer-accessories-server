@@ -4,6 +4,8 @@ require('dotenv').config()
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
 const jwt = require('jsonwebtoken');
+const stripe = require("stripe")('sk_test_51M9ivWKSFjSDGG4pXcCDIB5gRMms8ibipuHAWAQ1moeTQIIweWfEY96euGKuPOvmJJ6uqWjUtwgdhiudZLiIAo2M003Y7OfHJm');
+
 
 const port = process.env.PORT || 5000;
 
@@ -71,6 +73,13 @@ async function run() {
             const allUserQuery = {};
             const allUser = await usersCollection.find(allUserQuery).toArray();
             res.send(allUser);
+        })
+
+        app.get('/users/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+            res.send({ isAdmin: user?.category === 'admin' })
         })
 
         app.patch('/users/:id', async (req, res) => {
@@ -171,6 +180,22 @@ async function run() {
             const addBooking = await bookingCollection.insertOne(booking);
             res.send(addBooking);
         })
+        // Load user Booked item
+        app.get('/bookings', async (req, res) => {
+            const id = req.query.id;
+            if (id) {
+                const idQuery = { _id: ObjectId(id) };
+                const bookedItem = await bookingCollection.findOne(idQuery);
+                return res.send(bookedItem)
+            }
+            // Search Booking By Email
+            const email = req.query.email;
+            const query = { buyerEmail: email };
+            const userBookings = await bookingCollection.find(query).toArray();
+            res.send(userBookings);
+        })
+
+
     }
     finally { }
 }
