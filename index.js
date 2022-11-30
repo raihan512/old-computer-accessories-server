@@ -40,15 +40,13 @@ async function run() {
         const categoriesCollection = client.db("pcParts").collection('category');
         const usersCollection = client.db("pcParts").collection('user');
         const productsCollection = client.db("pcParts").collection('product');
+        const bookingCollection = client.db("pcParts").collection('booking');
 
         app.get('/categories', async (req, res) => {
             const query = {};
             const categories = await categoriesCollection.find(query).toArray();
             res.send(categories)
         })
-
-
-
 
         app.get('/jwt', async (req, res) => {
             const email = req.query.email;
@@ -73,7 +71,17 @@ async function run() {
             const allUserQuery = {};
             const allUser = await usersCollection.find(allUserQuery).toArray();
             res.send(allUser);
+        })
 
+        app.patch('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const verifyUser = {
+                $set: { userVerified: true }
+            }
+            const updateUser = await usersCollection.updateOne(query, verifyUser, options);
+            res.send(updateUser);
         })
 
         // Delete user by id
@@ -155,6 +163,13 @@ async function run() {
             const query = { _id: ObjectId(id) };
             const findProduct = await productsCollection.findOne(query);
             res.send(findProduct)
+        })
+
+        // Set Booking
+        app.post('/bookings', async (req, res) => {
+            const booking = req.body;
+            const addBooking = await bookingCollection.insertOne(booking);
+            res.send(addBooking);
         })
     }
     finally { }
